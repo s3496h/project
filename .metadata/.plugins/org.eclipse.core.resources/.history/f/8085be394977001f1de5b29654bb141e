@@ -1,0 +1,43 @@
+package com.example.demo.repository;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+import com.example.demo.vo.Review;
+
+@Mapper
+public interface ReviewRepository {
+
+    // Fetch reviews for a specific product with pagination, including the writerNickname field
+    @Select("""
+            SELECT R.*, M.nickname AS writerNickname
+            FROM product_reviews R
+            LEFT JOIN member M ON R.user_name = M.loginId 
+            WHERE R.product_id = #{productId}
+            ORDER BY R.review_date DESC
+            LIMIT #{limit} OFFSET #{offset}
+            """)
+    List<Review> getProductReviewsWithPagination(@Param("productId") int productId, 
+                                                 @Param("offset") int offset, 
+                                                 @Param("limit") int limit);
+
+    // Add a new review to the product_reviews table
+    @Insert("""
+            INSERT INTO product_reviews (product_id, user_name, content, rating, review_date)
+            VALUES (#{productId}, #{userName}, #{content}, #{rating}, NOW())
+            """)
+    void addReview(@Param("productId") int productId,
+                   @Param("userName") String userName,
+                   @Param("content") String content,
+                   @Param("rating") int rating);
+
+    // Count total number of reviews for a specific product
+    @Select("""
+            SELECT COUNT(*)
+            FROM product_reviews
+            WHERE product_id = #{productId}
+            """)
+    int countReviewsByProductId(@Param("productId") int productId);
+}

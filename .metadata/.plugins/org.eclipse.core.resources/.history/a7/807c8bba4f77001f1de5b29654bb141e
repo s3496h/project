@@ -1,0 +1,85 @@
+package com.example.demo.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.repository.ReviewRepository;
+import com.example.demo.vo.ProductReview;
+import com.example.demo.vo.ResultData;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j // Lombok의 @Slf4j 어노테이션을 추가하여 로깅 사용
+public class ReviewService {
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    /**
+     * 특정 제품의 리뷰를 페이지네이션하여 가져옵니다.
+     * @param productId 제품 ID
+     * @param page 페이지 번호 (1부터 시작)
+     * @param reviewsPerPage 페이지당 리뷰 수
+     * @return 리뷰 리스트를 포함한 ResultData 객체
+     */
+    public ResultData<List<ProductReview>> getReviewsByProductIdWithPagination(int productId, int page, int reviewsPerPage) {
+        int offset = (page - 1) * reviewsPerPage; // 페이지에 맞는 오프셋 계산
+        List<ProductReview> reviews = reviewRepository.getProductReviewsWithPagination(productId, offset, reviewsPerPage);
+        
+        if (reviews.isEmpty()) {
+            return ResultData.from("F-1", "리뷰가 없습니다.");
+        }
+
+        return ResultData.from("S-1", "리뷰를 불러왔습니다.", "reviews", reviews);
+    }
+
+    /**
+     * 특정 제품의 리뷰 총 개수를 가져옵니다.
+     * @param productId 제품 ID
+     * @return 리뷰 총 개수
+     */
+    public int getTotalReviewCountByProductId(int productId) {
+        return reviewRepository.countReviewsByProductId(productId);
+    }
+
+    /**
+     * 새로운 리뷰를 추가합니다.
+     * @param productId 제품 ID
+     * @param userName 작성자의 로그인 ID
+     * @param content 리뷰 내용
+     * @param rating 평점 (1~5)
+     * @param writerNickname 작성자의 닉네임
+     * @return 리뷰 추가 결과를 포함한 ResultData 객체
+     */
+    public ResultData<String> addReview(int productId, String userName, String content, int rating, String writerNickname) {
+        // 입력값 검증
+        if (userName == null || userName.trim().isEmpty()) {
+            return ResultData.from("F-2", "사용자 이름을 입력하세요.");
+        }
+        if (writerNickname == null || writerNickname.trim().isEmpty()) {
+            return ResultData.from("F-5", "작성자의 닉네임을 입력하세요.");
+        }
+        if (content == null || content.trim().isEmpty()) {
+            return ResultData.from("F-3", "리뷰 내용을 입력하세요.");
+        }
+        if (rating < 1 || rating > 5) {
+            return ResultData.from("F-4", "유효한 별점을 선택하세요.");
+        }
+
+        try {
+            int affectedRows = reviewRepository.addReview(productId, userName, content, rating, writerNickname);
+            if (affectedRows > 0) {
+                return ResultData.from("S-2", "리뷰가 추가되었습니다.");
+            } else {
+                return ResultData.from("F-1", "리뷰 추가에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 로깅
+            log.error("Error adding review: ", e);
+            return ResultData.from("F-1", "리뷰 추가에 실패했습니다: " + e.getMessage());
+        }
+    }
+}

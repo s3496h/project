@@ -1,0 +1,191 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ include file="../common/head.jspf"%>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>${product.name}-상세정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <%@ include file="../common/body.jspf"%>
+
+    <div class="w-full p-0">
+        <!-- Product Details Section -->
+        <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <img src="<c:url value='/images/${product.productId}.jpg'/>" alt="${product.name}"
+                         class="w-full h-auto rounded-lg shadow-md">
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">${product.name}</h1>
+                    <p class="text-gray-600 text-lg mb-4">${product.description}</p>
+                    <div class="text-2xl font-semibold text-red-500 mb-6">
+                        가격: <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="₩" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="size" class="block text-sm font-medium text-gray-700">사이즈</label>
+                        <select id="size" name="size" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <c:forEach var="size" items="${product.sizes}">
+                                <option value="${size}">${size}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="color" class="block text-sm font-medium text-gray-700">색상</label>
+                        <select id="color" name="color" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <c:forEach var="color" items="${product.colors}">
+                                <option value="${color}">${color}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <form action="<c:url value='/cart/add'/>" method="post">
+                        <input type="hidden" name="productId" value="${product.productId}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit"
+                            class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition duration-300">
+                            장바구니에 담기
+                        </button>
+                    </form>
+
+                    <div class="mt-6">
+                        <span class="text-gray-700 font-semibold">공유하기:</span>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https://example.com/product/${product.productId}" class="text-blue-500 hover:text-blue-700 ml-4" target="_blank">
+                            <i class="fab fa-facebook fa-lg"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url=https://example.com/product/${product.productId}&text=Check%20out%20this%20product!" class="text-blue-300 hover:text-blue-500 ml-4" target="_blank">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/" class="text-pink-500 hover:text-pink-700 ml-4" target="_blank">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Section -->
+        <div class="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-md rounded-lg">
+            <h2 class="text-3xl font-bold mb-4">리뷰</h2>
+
+            <c:if test="${not empty reviews}">
+                <ul class="space-y-4">
+                    <c:forEach var="review" items="${reviews}">
+                        <li class="border border-gray-300 rounded-lg p-4 shadow-md bg-white">
+                            <strong>${review.userName}</strong>
+                            <div class="flex items-center mt-1">
+                                <!-- Star Rating Display -->
+                                <c:forEach var="i" begin="1" end="5">
+                                    <i class="<c:choose><c:when test='${i <= review.rating}'>fas fa-star text-yellow-500</c:when><c:otherwise>far fa-star text-gray-300</c:otherwise></c:choose>"></i>
+                                </c:forEach>
+                            </div>
+                            <p class="mt-2">${review.content}</p>
+                        </li>
+                    </c:forEach>
+                </ul>
+
+                <!-- Pagination Controls -->
+                <div class="flex items-center justify-center mt-6 space-x-2">
+                    <!-- First Page -->
+                    <c:if test="${page > 1}">
+                        <a href="?id=${product.id}&page=1" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">처음</a>
+                    </c:if>
+
+                    <!-- Previous Page -->
+                    <c:if test="${page > 1}">
+                        <a href="?id=${product.id}&page=${page - 1}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">이전</a>
+                    </c:if>
+
+                    <!-- Page Number Links -->
+                    <c:choose>
+                        <c:when test="${totalPages <= 5}">
+                            <c:forEach var="i" begin="1" end="${totalPages}">
+                                <c:choose>
+                                    <c:when test="${i == page}">
+                                        <span class="bg-indigo-500 text-white px-4 py-2 rounded-full border border-indigo-500 font-semibold">${i}</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="?id=${product.id}&page=${i}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">${i}</a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <c:choose>
+                                <c:when test="${page <= 3}">
+                                    <c:forEach var="i" begin="1" end="5">
+                                        <c:choose>
+                                            <c:when test="${i == page}">
+                                                <span class="bg-indigo-500 text-white px-4 py-2 rounded-full border border-indigo-500 font-semibold">${i}</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="?id=${product.id}&page=${i}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">${i}</a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                    <c:if test="${totalPages > 5}">
+                                        <span class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300">...</span>
+                                    </c:if>
+                                </c:when>
+                                <c:when test="${page > 3 && page < totalPages - 2}">
+                                    <c:if test="${page > 4}">
+                                        <span class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300">...</span>
+                                    </c:if>
+                                    <c:forEach var="i" begin="${page - 2}" end="${page + 2}">
+                                        <c:choose>
+                                            <c:when test="${i == page}">
+                                                <span class="bg-indigo-500 text-white px-4 py-2 rounded-full border border-indigo-500 font-semibold">${i}</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="?id=${product.id}&page=${i}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">${i}</a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                    <span class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300">...</span>
+                                </c:when>
+                                <c:when test="${page >= totalPages - 2}">
+                                    <c:if test="${totalPages > 5}">
+                                        <span class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300">...</span>
+                                    </c:if>
+                                    <c:forEach var="i" begin="${totalPages - 4}" end="${totalPages}">
+                                        <c:choose>
+                                            <c:when test="${i == page}">
+                                                <span class="bg-indigo-500 text-white px-4 py-2 rounded-full border border-indigo-500 font-semibold">${i}</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="?id=${product.id}&page=${i}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">${i}</a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </c:when>
+                            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
+
+                    <!-- Next Page -->
+                    <c:if test="${page < totalPages}">
+                        <a href="?id=${product.id}&page=${page + 1}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">다음</a>
+                    </c:if>
+
+                    <!-- Last Page -->
+                    <c:if test="${page < totalPages}">
+                        <a href="?id=${product.id}&page=${totalPages}" class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors duration-300">끝</a>
+                    </c:if>
+                </div>
+            </c:if>
+            <c:if test="${empty reviews}">
+                <p class="text-gray-600">아직 등록된 리뷰가 없습니다.</p>
+            </c:if>
+        </div>
+    </div>
+
+    <%@ include file="../common/footer.jspf"%>
+</body>
+</html>

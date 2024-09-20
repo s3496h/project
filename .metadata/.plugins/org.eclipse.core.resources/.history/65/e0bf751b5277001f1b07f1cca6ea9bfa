@@ -1,0 +1,23 @@
+<mapper namespace="com.example.demo.repository.ReviewRepository">
+
+    <!-- 특정 제품의 리뷰를 페이지네이션하여 가져오기 -->
+    <select id="getProductReviewsWithPagination" parameterType="map" resultType="ProductReview">
+        SELECT * FROM reviews 
+        WHERE product_id = #{productId}
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 특정 제품의 리뷰 총 개수 구하기 -->
+    <select id="countReviewsByProductId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM reviews 
+        WHERE product_id = #{productId}
+    </select>
+
+    <!-- 리뷰 추가하기 -->
+    <insert id="addReview" parameterType="map">
+        INSERT INTO reviews (product_id, user_name, content, rating, writer_nickname, created_at)
+        VALUES (#{productId}, #{userName}, #{content}, #{rating}, #{writerNickname}, NOW())
+    </insert>
+
+</mapper>
