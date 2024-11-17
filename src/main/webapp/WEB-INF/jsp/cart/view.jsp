@@ -1,6 +1,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> <!-- 추가: JSTL 태그 라이브러리 포함 -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> <!-- ì¶ê°: JSTL íê·¸ ë¼ì´ë¸ë¬ë¦¬ í¬í¨ -->
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <html>
 <head>
@@ -41,7 +42,7 @@
 
             <form action="order/checkout" method="post">
                 <input type="hidden" name="memberId" value="${cartItems[0].memberId}">
-                <input type="hidden" name="totalAmount" value="${totalAmount}"> <!-- totalAmount 확인 -->
+                <input type="hidden" name="totalAmount" value="${TotalPrice}"> <!-- totalAmount íì¸ -->
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Checkout</button>
             </form>
         </c:if>

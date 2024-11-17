@@ -98,7 +98,7 @@
 			<version>3.0.3</version>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<!-- SQL 로거 -->
 		<dependency>
 			<groupId>org.bgee.log4jdbc-log4j2</groupId>
@@ -163,7 +163,6 @@
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
 
-		
 
 	</dependencies>
 
