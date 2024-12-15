@@ -19,7 +19,7 @@
 			<!-- Updated classes here -->
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div>
-					<img src="<c:url value='/images/${product.productId}.jpg'/>" alt="${product.name}"
+					<img src="<c:url value='/images/${product.id}.jpg'/>" alt="${product.name}"
 						class="w-full h-auto rounded-lg shadow-md">
 				</div>
 
@@ -88,21 +88,8 @@
 		<!-- Review Section -->
 		<div class="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-md rounded-lg">
 			<h2 class="text-3xl font-bold mb-4">리뷰</h2>
-			<p class="text-lg">
-				평균 별점: <strong>${averageRating}</strong>
-			</p>
+			
 			<div class="flex items-center">
-				<c:forEach var="i" begin="1" end="5">
-					<i
-						class="<c:choose>
-            <c:when test='${i <= averageRating}'>
-                fas fa-star text-yellow-500
-            </c:when>
-            <c:otherwise>
-                far fa-star text-gray-300
-            </c:otherwise>
-        </c:choose>"></i>
-				</c:forEach>
 			</div>
 			<c:if test="${not empty reviews}">
 				<ul class="space-y-4">

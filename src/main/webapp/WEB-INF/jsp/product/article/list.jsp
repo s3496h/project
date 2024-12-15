@@ -49,7 +49,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <c:forEach var="product" items="${productList}">
                 <a href="<c:url value='/product/article/detail?id=${product.id}'/>" class="block bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <img src="<c:url value='/images/${product.productId}.jpg'/>" alt="${product.name}" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                    <img src="<c:url value='/images/${product.id}.jpg'/>" alt="${product.name}" class="w-full h-50 object-cover rounded-t-lg mb-4">
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">${product.name}</h2>
                     <p class="text-gray-600 mb-4">${product.description}</p>
                     <p class="text-lg font-bold text-red-500 mb-4">
